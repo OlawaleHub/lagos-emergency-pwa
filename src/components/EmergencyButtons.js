@@ -2,8 +2,9 @@
 "use client";
 import { useState, useCallback } from "react";
 import { Shield, Flame, HeartPulse, Loader2, Check, MapPin, Phone } from "lucide-react";
-import { EMERGENCY_TYPES, LAGOS_LGAS, FACILITIES } from "@/lib/constants";
+import { EMERGENCY_TYPES, LAGOS_LGAS } from "@/lib/constants";
 import { getPosition } from "@/lib/geo";
+import { resolveNearestFacility } from "@/lib/facilities";
 import { queueAlert, getQueuedAlerts, deleteAlert } from "@/lib/indexeddb";
 
 const ICONS = { police: Shield, fire: Flame, medical: HeartPulse };
@@ -57,15 +58,17 @@ export default function EmergencyButtons() {
       }
 
       setStatus("submitting");
-      const entry = FACILITIES[usedLga] || FACILITIES["Lagos Island"] || {};
-      const facility = entry[type] || {};
+      // Resolve the nearest facility from real GPS coords (not a hardcoded LGA).
+      const resolved = resolveNearestFacility(coords, type, usedLga);
+      const facility = resolved.facility || {};
       const alert = {
         id: uid(),
         type,
         label: EMERGENCY_TYPES.find((t) => t.key === type)?.label,
         coords,
-        lga: usedLga,
+        lga: resolved.lga,
         facility: facility.name || null,
+        distance: resolved.distance,
         timestamp: Date.now(),
         status: "queued",
       };
@@ -206,7 +209,13 @@ export default function EmergencyButtons() {
             </p>
           )}
           {lastResult.facility?.name && (
-            <p className="text-xs text-neutral-400 mt-1">Nearest: {lastResult.facility.name}</p>
+            <p className="text-xs text-neutral-300 mt-1">
+              Nearest {lastResult.label} facility:{" "}
+              <span className="text-white font-medium">{lastResult.facility.name}</span>
+              {typeof lastResult.distance === "number" && (
+                <span className="text-neutral-400"> ({lastResult.distance.toFixed(1)} km away)</span>
+              )}
+            </p>
           )}
           <a
             href={`tel:${lastResult.facility?.phone || "112"}`}

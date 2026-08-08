@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { MapPin, Loader2, Navigation, Phone } from "lucide-react";
 import { LAGOS_LGAS, FACILITIES, EMERGENCY_TYPES } from "@/lib/constants";
-import { getPosition, distanceKm } from "@/lib/geo";
+import { getPosition } from "@/lib/geo";
+import { facilitiesByDistance, resolveNearestFacility } from "@/lib/facilities";
 
 export default function LocateClient() {
   const mapRef = useRef(null);
@@ -50,24 +51,41 @@ export default function LocateClient() {
     renderUser();
   }
 
+  // Which facilities to render on the map.
+  // - LGA chosen → that LGA's 3 facilities.
+  // - no LGA → every known facility (so the user sees options around them).
+  function getMapFacilities() {
+    const out = [];
+    const seen = new Set();
+    const source = lga && FACILITIES[lga] ? { [lga]: FACILITIES[lga] } : FACILITIES;
+    for (const [lgaName, depts] of Object.entries(source)) {
+      for (const t of EMERGENCY_TYPES) {
+        const fac = depts[t.key];
+        if (fac && !seen.has(fac.name)) {
+          seen.add(fac.name);
+          out.push({ ...fac, type: t.key, label: t.label, lga: lgaName });
+        }
+      }
+    }
+    return out;
+  }
+
   function renderFacilities() {
     if (!mapInstance.current || !window.L) return;
     facilityMarkersRef.current.forEach((m) => m.remove());
     facilityMarkersRef.current = [];
 
     const colorMap = { police: "#2563eb", fire: "#ea580c", medical: "#16a34a" };
-    EMERGENCY_TYPES.forEach((t) => {
-      const fac = resolveFacility(t.key);
-      if (!fac) return;
+    getMapFacilities().forEach((fac) => {
       const icon = window.L.divIcon({
-        html: `<div style="background:${colorMap[t.key]};width:26px;height:26px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.5)"></div>`,
+        html: `<div style="background:${colorMap[fac.type]};width:26px;height:26px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.5)"></div>`,
         className: "",
         iconSize: [26, 26],
         iconAnchor: [13, 26],
       });
       const m = window.L.marker([fac.lat, fac.lng], { icon }).addTo(mapInstance.current);
       m.bindPopup(
-        `<b>${fac.name}</b><br/>${t.label}<br/><a href="tel:${fac.phone}">Call ${fac.phone}</a>`
+        `<b>${fac.name}</b><br/>${fac.label} • ${fac.lga}<br/><a href="tel:${fac.phone}">Call ${fac.phone}</a>`
       );
       facilityMarkersRef.current.push(m);
     });
@@ -91,6 +109,7 @@ export default function LocateClient() {
   }
 
   function resolveFacility(type) {
+    // Legacy helper kept for compatibility; resolution now goes through lib.
     const lgaKey = lga || "Lagos Island";
     const entry = FACILITIES[lgaKey] || FACILITIES["Lagos Island"];
     return entry ? entry[type] : null;
@@ -108,17 +127,20 @@ export default function LocateClient() {
     } finally {
       setLocating(false);
     }
-  }, []);
+  }, [lga]);
 
+  // Nearest facility PER type, computed from real GPS distance across all LGAs.
   function computeNearest(c) {
-    const list = [];
-    EMERGENCY_TYPES.forEach((t) => {
-      const fac = resolveFacility(t.key);
-      if (fac) {
-        list.push({ ...fac, type: t.key, label: t.label, dist: distanceKm(c, fac) });
-      }
-    });
-    return list.sort((a, b) => a.dist - b.dist);
+    return EMERGENCY_TYPES.map((t) => {
+      const r = resolveNearestFacility(c, t.key, lga);
+      return {
+        ...(r.facility || {}),
+        type: t.key,
+        label: t.label,
+        lga: r.lga,
+        dist: r.distance,
+      };
+    }).sort((a, b) => (a.dist ?? Infinity) - (b.dist ?? Infinity));
   }
 
   useEffect(() => {
@@ -177,7 +199,10 @@ export default function LocateClient() {
               </span>
               <div className="flex-1">
                 <p className="text-sm font-semibold text-white">{f.name}</p>
-                <p className="text-xs text-neutral-400">{f.label} • {f.dist.toFixed(1)} km away</p>
+                <p className="text-xs text-neutral-400">
+                  {f.label} • {f.lga}
+                  {typeof f.dist === "number" ? ` • ${f.dist.toFixed(1)} km away` : ""}
+                </p>
               </div>
               <a
                 href={`tel:${f.phone}`}
