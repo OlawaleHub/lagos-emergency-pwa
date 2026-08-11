@@ -22,6 +22,10 @@ export default function Footer() {
           <span className="text-white">HelpmeNG</span>
         </span>
       </div>
+
+      <p className="mt-3 text-[11px] text-neutral-500">
+        Powered by <span className="text-white font-semibold">REFCRYPT LABS</span>
+      </p>
     </footer>
   );
 }
