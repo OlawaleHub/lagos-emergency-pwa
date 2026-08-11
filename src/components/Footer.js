@@ -12,14 +12,14 @@ export default function Footer() {
 
       <div className="mt-3 flex items-center justify-center gap-2">
         <Image
-          src="/refcrypt-logo.png"
-          alt="REFCRYPT LABS"
-          width={28}
-          height={28}
+          src="/helpmeng-logo.png"
+          alt="HelpmeNG"
+          width={24}
+          height={24}
           className="rounded"
         />
         <span className="text-xs font-semibold tracking-wide">
-          Powered by <span className="text-white">REFCRYPT LABS</span>
+          <span className="text-white">HelpmeNG</span>
         </span>
       </div>
     </footer>

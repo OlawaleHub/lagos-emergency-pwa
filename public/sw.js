@@ -1,5 +1,5 @@
 // public/sw.js
-// Offline-first service worker for Lagos Emergency Reporter.
+// Offline-first service worker for HelpmeNG.
 // Strategy:
 //   - Precache the app shell on install so the app boots with zero network.
 //   - Cache-first for static assets (icons), network-first for pages, stale-while-revalidate for the Next build.

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { WifiOff } from "lucide-react";
 
 export const metadata = {
-  title: "Offline — Lagos Emergency Reporter",
+  title: "Offline — HelpmeNG",
 };
 
 export default function OfflinePage() {

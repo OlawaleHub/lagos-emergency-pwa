@@ -32,5 +32,5 @@ export async function POST(request) {
 }
 
 export async function GET() {
-  return NextResponse.json({ ok: true, service: "lagos-emergency-reporter" });
+  return NextResponse.json({ ok: true, service: "helpmeng" });
 }

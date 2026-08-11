@@ -1,4 +1,4 @@
-# Lagos Emergency Reporter — One-Tap PWA (Offline-First)
+# HelpmeNG — One-Tap PWA (Offline-First)
 
 A production-ready Next.js (App Router) PWA that lets people in Lagos report
 emergencies to the **nearest Police, Fire, or Medical** service with a single
@@ -47,7 +47,7 @@ npm run dev
 No `vercel.json` needed — Vercel handles Next.js natively.
 
 ```bash
-git init && git add -A && git commit -m "Lagos Emergency Reporter PWA"
+git init && git add -A && git commit -m "HelpmeNG PWA"
 # push to GitHub, then import the repo at vercel.com → Deploy
 ```
 

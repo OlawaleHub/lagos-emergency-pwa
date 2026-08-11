@@ -14,8 +14,9 @@ html, body {
   overscroll-behavior: none;
 }
 
-/* REFCRYPT LABS logo as a fixed, subtle watermark background.
-   Kept low-opacity so the emergency buttons stay fully visible & usable. */
+/* HelpmeNG logo as a fixed, subtle watermark background.
+   Blended into the dark site via low opacity + screen blend so its colours
+   lift gently against the black without overpowering the emergency buttons. */
 body {
   padding-top: var(--safe-top);
   position: relative;
@@ -25,12 +26,12 @@ body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background-image: url("/refcrypt-logo.png");
+  background-image: url("/helpmeng-logo.png");
   background-repeat: no-repeat;
   background-position: center;
-  background-size: min(80vw, 520px) auto;
-  opacity: 0.06;
-  filter: grayscale(1);
+  background-size: min(78vw, 520px) auto;
+  opacity: 0.10;
+  mix-blend-mode: screen;
   pointer-events: none;
   z-index: 0;
 }

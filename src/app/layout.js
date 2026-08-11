@@ -8,22 +8,22 @@ import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata = {
-  title: "Lagos Emergency Reporter — One-Tap Police, Fire & Medical",
+  title: "HelpmeNG — One-Tap Police, Fire & Medical Emergency Reporting",
   description:
     "One-tap emergency reporting for Lagos. Connect to the nearest police, fire, and medical services. Works offline with auto-sync.",
   manifest: "/manifest.json",
-  applicationName: "Lagos Emergency Reporter",
+  applicationName: "HelpmeNG",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Lagos 911",
+    title: "HelpmeNG",
   },
   icons: {
     icon: [{ url: "/icons/icon-192.svg", type: "image/svg+xml" }],
     apple: [{ url: "/icons/icon-192.svg" }],
   },
   openGraph: {
-    title: "Lagos Emergency Reporter",
+    title: "HelpmeNG",
     description: "One-tap emergency reporting for Lagos. Works offline.",
     type: "website",
   },

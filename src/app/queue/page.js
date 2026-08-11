@@ -2,7 +2,7 @@
 import QueueClient from "@/components/QueueClient";
 
 export const metadata = {
-  title: "Queued Alerts — Lagos Emergency Reporter",
+  title: "Queued Alerts — HelpmeNG",
   description: "View and manage offline-queued emergency alerts pending sync.",
 };
 
